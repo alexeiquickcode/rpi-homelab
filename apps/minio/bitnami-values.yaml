@@ -1,0 +1,59 @@
+# Helm Chart: MinIO (by Bitnami)
+# Version: 15.0.1 
+# Maintainer: Bitnami (https://bitnami.com/contact)
+# Documentation: https://artifacthub.io/packages/helm/bitnami/minio
+# Source Repository: https://github.com/bitnami/charts/tree/main/bitnami/minio
+#
+# Helm chart for deploying distributed MinIO (object store) on Kubernetes.
+
+mode: distributed
+
+statefulset:
+  replicaCount: 4
+
+global:
+  defaultStorageClass: local-path 
+
+images:
+  registry: registry-1.docker.io
+  repository: bitnamicharts 
+
+persistence:
+  enabled: true
+  storageClass: local-path
+  size: 100Gi
+
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: minio-node
+              operator: In
+              values:
+                - minio-0
+                - minio-1
+                - minio-2
+                - minio-3
+
+service:
+  type: LoadBalancer
+  ports:
+    minio: 9000
+    console: 9001
+
+livenessProbe:
+  enabled: true
+  initialDelaySeconds: 15
+  periodSeconds: 15
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1
+
+readinessProbe:
+  enabled: true
+  initialDelaySeconds: 15
+  periodSeconds: 15
+  timeoutSeconds: 5
+  failureThreshold: 6
+  successThreshold: 1

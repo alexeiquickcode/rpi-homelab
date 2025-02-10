@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ollama
+  name: ollama
+  namespace: ollama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:  
+      containers:
+        - image: ollama/ollama:latest
+          name: ollama
+          ports:
+          - containerPort: 11434
+          resources:
+            requests:
+              cpu: 1000m
+              memory: 2Gi
+              nvidia.com/gpu: 1 
+            limits: 
+              cpu: 16000m
+              memory: 32Gi
+              nvidia.com/gpu: 1 
+        - image: curlimages/curl
+          name: load-model
+          command: ["/bin/sh", "-c"]
+          args:
+            - "sleep infinity"
+          env: 
+            - name: MODEL_NAME
+              value: "llama3.2"
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - "/bin/sh"
+                  - "-c"
+                  - |
+                    echo "Starting image pull for model '${MODEL_NAME}' at $(date)" 
+                    curl -X POST http://localhost:11434/api/pull -H 'Content-Type: application/json' -d '{\"name\": \"${MODEL_NAME}\"}'
+                    echo "Image pull completed for model '${MODEL_NAME}' at $(date)" 
+          resources:
+            limits:
+              memory: 50Mi
+              cpu: 25m
+      tolerations:
+        - key: gpu-node
+          operator: Equal
+          value: restricted
+          effect: NoSchedule 
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama
+  namespace: ollama
+spec:
+  type: ClusterIP
+  selector:
+    app: ollama
+  ports:
+  - port: 80
+    name: http
+    targetPort: http
+    protocol: TCP

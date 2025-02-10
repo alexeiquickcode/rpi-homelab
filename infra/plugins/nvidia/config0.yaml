@@ -1,0 +1,26 @@
+version: v1
+flags:
+  migStrategy: "none"
+  failOnInitError: true
+  nvidiaDriverRoot: "/"
+  plugin:
+    passDeviceSpecs: false
+    deviceListStrategy: envvar
+    deviceIDStrategy: uuid
+
+tolerations:
+    # Existing tolerations
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+
+    # Custom
+  - key: gpu-node
+    operator: Equal
+    value: restricted
+    effect: NoSchedule
+
+gfd:
+  enabled: true

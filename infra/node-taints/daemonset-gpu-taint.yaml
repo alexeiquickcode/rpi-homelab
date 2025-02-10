@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: apply-node-taints
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: apply-taints
+  template:
+    metadata:
+      labels:
+        app: apply-taints
+    spec:
+      serviceAccountName: apply-node-taints-sa
+      containers:
+        - name: apply-taints
+          image: bitnami/kubectl:latest
+          command: ["sh", "-c"]
+          args:
+            - >
+              echo "Applying taint on node $KUBE_NODE_NAME";
+              kubectl describe node $KUBE_NODE_NAME;
+              kubectl taint nodes $KUBE_NODE_NAME gpu-node=restricted:NoSchedule --overwrite || true;
+              sleep infinity;
+          env:
+            - name: KUBE_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: kubeconfig
+              mountPath: /home/alexei/.kube/
+              readOnly: true
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/hostname: ubuntu01 
+      volumes:
+        - name: kubeconfig
+          hostPath:
+            path: /home/alexei/.kube/
+            type: DirectoryOrCreate
