@@ -18,9 +18,9 @@ This setup has been carefully planned to support both experimentation and day-to
 
 ## Hardware Overview 
 
-![Cluster Diagram](./images/rpi-cluster-diagram.png)
-![Cluster Setup1](./images/rpi-cluster-pic1.png)
-![Cluster Setup2](./images/rpi-cluster-pic2.png)
+![Cluster Diagram](./static/rpi-cluster-diagram.png)
+![Cluster Setup1](./static/rpi-cluster-pic1.png)
+![Cluster Setup2](./static/rpi-cluster-pic2.png)
 
 ## Software (RPI OS) Setup
 
@@ -118,8 +118,8 @@ sudo cat /var/lib/rancher/k3s/server/node-token
 Execute the following on each of the worker nodes:
 
 ```bash
-MASTER_NODE_URL=https://192.168.20.100:6443
 MASTER_NODE_TOKEN="a1b2c3::server:a1b2c3token"  
+MASTER_NODE_URL=https://192.168.20.100:6443
 
 # Execute this to install the worker nodes
 curl -sfL https://get.k3s.io | K3S_URL=${MASTER_NODE_URL} \
@@ -151,7 +151,7 @@ sudo chmod 777 /srv/nfs
 sudo nano /etc/exports
 /srv/nfs *(rw,sync,no_subtree_check)
 sudo exportfs -ra # Apply config
-exportfs # Check if working
+sudo exportfs # Check if working
 ```
 
 ### GPU Support

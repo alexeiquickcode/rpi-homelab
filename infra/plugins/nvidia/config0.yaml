@@ -9,17 +9,10 @@ flags:
     deviceIDStrategy: uuid
 
 tolerations:
-    # Existing tolerations
   - key: CriticalAddonsOnly
     operator: Exists
   - key: nvidia.com/gpu
     operator: Exists
-    effect: NoSchedule
-
-    # Custom
-  - key: gpu-node
-    operator: Equal
-    value: restricted
     effect: NoSchedule
 
 gfd:
