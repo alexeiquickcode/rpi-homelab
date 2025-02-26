@@ -157,3 +157,9 @@ sudo exportfs # Check if working
 ### GPU Support
 
 https://github.com/NVIDIA/k8s-device-plugin
+
+# Check if access to GPU
+```bash
+kubectl get nodes "-o=custom-columns=NAME:.metadata.name,GPU:.status.allocatable.nvidia\.com/gpu"
+kubectl get pods -A -o custom-columns="POD:.metadata.name,NAMESPACE:.metadata.namespace,STATUS:.status.phase,NODE:.spec.nodeName,GPU:.spec.containers[*].resources.limits.nvidia\.com/gpu"
+```

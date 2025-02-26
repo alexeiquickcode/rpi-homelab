@@ -31,7 +31,8 @@ kubectl create namespace $NFS_NAMESPACE --dry-run=client -o yaml | kubectl apply
 kubectl create namespace $OLLAMA_NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
 
 # Apply node taints
-# kubectl taint nodes ubuntu01 nvidia.com/gpu=true:NoSchedule
+kubectl taint nodes archbox nvidia.com/gpu:NoSchedule
+
 # kubectl apply -f infra/service-accounts/apply-node-taints-sa.yaml -n kube-system
 # kubectl apply -f infra/node-taints/cluster-role.yaml -n kube-system
 # kubectl apply -f infra/node-taints/cluster-role-binding.yaml -n kube-system
@@ -91,7 +92,10 @@ echo "Applying Jellyfin resources..."
 kubectl apply -f apps/jellyfin/media-pv.yaml
 kubectl apply -f apps/jellyfin/pvc.yaml
 kubectl apply -f apps/jellyfin/deployment.yaml
-kubectl apply -f apps/ollama/deployment.yaml
+
+# Nvidia device plugin (no helm)
+kubectl apply -f infra/plugins/nvidia/runtime-class.yaml 
+kubectl apply -f infra/plugins/nvidia/nvidia-device-plugin.yaml 
 
 # Setup NVIDIA GPU pluging
 helm repo add nvdp https://nvidia.github.io/k8s-device-plugin
@@ -100,6 +104,9 @@ helm upgrade -i nvdp nvdp/nvidia-device-plugin \
   --version 0.17.0 \
   --namespace nvidia-device-plugin \
   --create-namespace 
-  # --set-file config.map.config=infra/plugins/nvidia/config0.yaml 
+  --set-file config.map.config=infra/plugins/nvidia/config0.yaml 
+
+# Ollama
+kubectl apply -f apps/ollama/deployment.yaml
 
 echo "Setup complete."

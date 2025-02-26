@@ -24,3 +24,6 @@ kubectl delete pvc --all -n $NAMESPACE_JELLYFIN
 # kubectl delete namespace $NAMESPACE_MINIO $NAMESPACE_JELLYFIN $NAMESPACE_NFS 
 
 kubectl delete namespace $NAMESPACE_JELLYFIN $NAMESPACE_NFS
+
+# Remove taints
+kubectl taint nodes archbox --all nvidia.com/gpu:NoSchedule-

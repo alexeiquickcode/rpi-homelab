@@ -21,7 +21,7 @@ spec:
             - >
               echo "Applying taint on node $KUBE_NODE_NAME";
               kubectl describe node $KUBE_NODE_NAME;
-              kubectl taint nodes $KUBE_NODE_NAME gpu-node=restricted:NoSchedule --overwrite || true;
+              kubectl taint nodes $KUBE_NODE_NAME nvidia.com/gpu=present:NoSchedule --overwrite || true;
               sleep infinity;
           env:
             - name: KUBE_NODE_NAME
@@ -34,7 +34,7 @@ spec:
               readOnly: true
       restartPolicy: Always
       nodeSelector:
-        kubernetes.io/hostname: ubuntu01 
+        kubernetes.io/hostname: archbox 
       volumes:
         - name: kubeconfig
           hostPath:

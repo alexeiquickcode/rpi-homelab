@@ -17,3 +17,6 @@ tolerations:
 
 gfd:
   enabled: true
+
+runtimeClassName:
+  nvidia

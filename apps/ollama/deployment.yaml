@@ -15,6 +15,7 @@ spec:
       labels:
         app: ollama
     spec:  
+      runtimeClassName: nvidia
       containers:
         - image: ollama/ollama:latest
           name: ollama
@@ -36,7 +37,7 @@ spec:
             - "sleep infinity"
           env: 
             - name: MODEL_NAME
-              value: "llama3.2"
+              value: "tinyllama"
           lifecycle:
             postStart:
               exec:
@@ -68,6 +69,6 @@ spec:
     app: ollama
   ports:
   - port: 80
+    targetPort: 11434
     name: http
-    targetPort: http
     protocol: TCP
